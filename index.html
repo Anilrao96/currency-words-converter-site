@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Currency Words Converter</title>
+    <meta
+      name="description"
+      content="Convert amounts into currency words for Indian rupees, US dollars, Japanese yen, euros, pounds, dirhams, and more."
+    />
+    <link rel="canonical" href="https://currencywordsconverter.com/" />
+    <meta property="og:title" content="Currency Words Converter" />
+    <meta
+      property="og:description"
+      content="Convert numeric amounts into clean currency words for rupees, dollars, yen, euros, pounds, and more."
+    />
+    <meta property="og:url" content="https://currencywordsconverter.com/" />
+    <meta property="og:type" content="website" />
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #f4f7f8;
+        --surface: #ffffff;
+        --surface-soft: #edf4f2;
+        --text: #142126;
+        --muted: #62717a;
+        --border: #ccd8dc;
+        --primary: #0f6f68;
+        --primary-strong: #0a4f4a;
+        --focus: #d28c22;
+        --danger: #b42318;
+        --shadow: 0 22px 55px rgba(20, 33, 38, 0.13);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background:
+          linear-gradient(180deg, #f8fbfb 0%, var(--background) 48%, #e8f0f1 100%);
+        color: var(--text);
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+        overflow: hidden;
+        min-height: min(760px, calc(100vh - 64px));
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        padding: clamp(24px, 4vw, 48px);
+      }
+
+      .masthead {
+        display: grid;
+        gap: 10px;
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--primary-strong);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 680px;
+        margin: 0;
+        font-size: clamp(2.25rem, 6vw, 4.8rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .summary {
+        max-width: 640px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.08rem;
+        line-height: 1.6;
+      }
+
+      form {
+        display: grid;
+        gap: 18px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: 1fr minmax(190px, 0.42fr);
+        gap: 14px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        color: #24343a;
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 54px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--text);
+        font-size: 1rem;
+        outline: none;
+      }
+
+      input {
+        padding: 0 16px;
+      }
+
+      select {
+        padding: 0 42px 0 14px;
+        appearance: none;
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--primary) 50%),
+          linear-gradient(135deg, var(--primary) 50%, transparent 50%);
+        background-position:
+          calc(100% - 18px) 24px,
+          calc(100% - 12px) 24px;
+        background-size: 6px 6px;
+        background-repeat: no-repeat;
+      }
+
+      input:focus,
+      select:focus,
+      button:focus-visible {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 4px rgba(210, 140, 34, 0.2);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      button {
+        min-height: 48px;
+        border: 0;
+        border-radius: 6px;
+        padding: 0 18px;
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .primary-action {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      .primary-action:hover {
+        background: var(--primary-strong);
+      }
+
+      .secondary-action {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+      }
+
+      .result {
+        display: grid;
+        gap: 12px;
+        min-height: 188px;
+        padding: 22px;
+        border: 1px solid #bfd0d1;
+        border-radius: 8px;
+        background: var(--surface-soft);
+      }
+
+      .result-label,
+      .comparison-title {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .result-value {
+        margin: 0;
+        color: var(--text);
+        font-size: clamp(1.35rem, 3.5vw, 2.2rem);
+        font-weight: 850;
+        line-height: 1.18;
+        overflow-wrap: anywhere;
+      }
+
+      .formatted {
+        margin: 0;
+        color: var(--primary-strong);
+        font-weight: 750;
+      }
+
+      .error {
+        color: var(--danger);
+      }
+
+      .comparison {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 18px;
+        padding: clamp(24px, 4vw, 36px);
+        border-left: 1px solid var(--border);
+        background: #fbfdfd;
+      }
+
+      .currency-list {
+        display: grid;
+        align-content: start;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .currency-list li {
+        display: grid;
+        gap: 6px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .currency-name {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .currency-words {
+        line-height: 1.45;
+      }
+
+      @media (max-width: 860px) {
+        main {
+          width: min(100% - 24px, 680px);
+          padding: 12px 0;
+        }
+
+        .app-shell,
+        .field-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .app-shell {
+          min-height: 0;
+        }
+
+        .comparison {
+          border-top: 1px solid var(--border);
+          border-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="app-shell" aria-labelledby="app-title">
+        <div class="workspace">
+          <header class="masthead">
+            <p class="eyebrow">Amount to words</p>
+            <h1 id="app-title">Currency Words Converter</h1>
+            <p class="summary">
+              Convert a typed amount into clean currency words for Indian rupees,
+              US dollars, Japanese yen, euros, pounds, dirhams, and more.
+            </p>
+          </header>
+
+          <form id="converter-form">
+            <div class="field-grid">
+              <label>
+                Amount
+                <input
+                  id="amount"
+                  name="amount"
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  value="1000"
+                  aria-describedby="amount-error"
+                />
+              </label>
+
+              <label>
+                Currency
+                <select id="currency" name="currency"></select>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="primary-action" type="submit">Convert</button>
+              <button class="secondary-action" id="copy-result" type="button">
+                Copy result
+              </button>
+            </div>
+          </form>
+
+          <section class="result" aria-live="polite" aria-atomic="true">
+            <p class="result-label">Result</p>
+            <p class="result-value" id="words-output"></p>
+            <p class="formatted" id="formatted-output"></p>
+            <p class="error" id="amount-error"></p>
+          </section>
+        </div>
+
+        <aside class="comparison" aria-labelledby="comparison-title">
+          <p class="comparison-title" id="comparison-title">Popular currencies</p>
+          <ul class="currency-list" id="currency-list"></ul>
+        </aside>
+      </section>
+    </main>
+
+    <script>
+      const currencies = [
+        {
+          code: "INR",
+          name: "Indian Rupee",
+          majorSingular: "Indian rupee",
+          majorPlural: "Indian rupees",
+          minorSingular: "paise",
+          minorPlural: "paise",
+          minorDigits: 2,
+          numbering: "indian",
+          locale: "en-IN"
+        },
+        {
+          code: "USD",
+          name: "US Dollar",
+          majorSingular: "US dollar",
+          majorPlural: "US dollars",
+          minorSingular: "cent",
+          minorPlural: "cents",
+          minorDigits: 2,
+          numbering: "international",
+          locale: "en-US"
+        },
+        {
+          code: "JPY",
+          name: "Japanese Yen",
+          majorSingular: "Japanese yen",
+          majorPlural: "Japanese yen",
+          minorDigits: 0,
+          numbering: "international",
+          locale: "ja-JP"
+        },
+        {
+          code: "EUR",
+          name: "Euro",
+          majorSingular: "euro",
+          majorPlural: "euros",
+          minorSingular: "cent",
+          minorPlural: "cents",
+          minorDigits: 2,
+          numbering: "international",
+          locale: "en-IE"
+        },
+        {
+          code: "GBP",
+          name: "British Pound",
+          majorSingular: "British pound",
+          majorPlural: "British pounds",
+          minorSingular: "penny",
+          minorPlural: "pence",
+          minorDigits: 2,
+          numbering: "international",
+          locale: "en-GB"
+        },
+        {
+          code: "AUD",
+          name: "Australian Dollar",
+          majorSingular: "Australian dollar",
+          majorPlural: "Australian dollars",
+          minorSingular: "cent",
+          minorPlural: "cents",
+          minorDigits: 2,
+          numbering: "international",
+          locale: "en-AU"
+        },
+        {
+          code: "CAD",
+          name: "Canadian Dollar",
+          majorSingular: "Canadian dollar",
+          majorPlural: "Canadian dollars",
+          minorSingular: "cent",
+          minorPlural: "cents",
+          minorDigits: 2,
+          numbering: "international",
+          locale: "en-CA"
+        },
+        {
+          code: "AED",
+          name: "UAE Dirham",
+          majorSingular: "UAE dirham",
+          majorPlural: "UAE dirhams",
+          minorSingular: "fils",
+          minorPlural: "fils",
+          minorDigits: 2,
+          numbering: "international",
+          locale: "en-AE"
+        }
+      ];
+
+      const ones = [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen"
+      ];
+      const tens = [
+        "",
+        "",
+        "twenty",
+        "thirty",
+        "forty",
+        "fifty",
+        "sixty",
+        "seventy",
+        "eighty",
+        "ninety"
+      ];
+      const internationalScales = ["", "thousand", "million", "billion", "trillion"];
+      const indianScales = ["", "thousand", "lakh", "crore", "arab", "kharab"];
+
+      const amountInput = document.getElementById("amount");
+      const currencySelect = document.getElementById("currency");
+      const form = document.getElementById("converter-form");
+      const output = document.getElementById("words-output");
+      const formattedOutput = document.getElementById("formatted-output");
+      const errorOutput = document.getElementById("amount-error");
+      const currencyList = document.getElementById("currency-list");
+      const copyButton = document.getElementById("copy-result");
+
+      for (const currency of currencies) {
+        const option = document.createElement("option");
+        option.value = currency.code;
+        option.textContent = `${currency.code} - ${currency.name}`;
+        currencySelect.append(option);
+      }
+
+      function parseAmount(value, minorDigits) {
+        const normalized = value.trim().replace(/,/g, "");
+        if (!/^\d+(\.\d*)?$/.test(normalized)) {
+          throw new Error("Enter a positive number using digits and an optional decimal point.");
+        }
+
+        const [majorPart, rawMinorPart = ""] = normalized.split(".");
+        const majorValue = Number(majorPart);
+
+        if (!Number.isSafeInteger(majorValue) || majorValue > 999999999999999) {
+          throw new Error("Enter an amount up to 999,999,999,999,999.");
+        }
+
+        if (minorDigits === 0 && Number(rawMinorPart) > 0) {
+          throw new Error("This currency does not use decimal minor units.");
+        }
+
+        if (rawMinorPart.length > minorDigits) {
+          throw new Error(`Use no more than ${minorDigits} decimal place${minorDigits === 1 ? "" : "s"}.`);
+        }
+
+        const paddedMinor = rawMinorPart.padEnd(minorDigits, "0").slice(0, minorDigits);
+
+        return {
+          major: majorValue,
+          minor: minorDigits === 0 ? 0 : Number(paddedMinor || "0"),
+          numeric: Number(`${majorPart}.${paddedMinor || "0"}`)
+        };
+      }
+
+      function underHundred(number) {
+        if (number < 20) {
+          return ones[number];
+        }
+
+        const ten = Math.floor(number / 10);
+        const one = number % 10;
+        return one === 0 ? tens[ten] : `${tens[ten]}-${ones[one]}`;
+      }
+
+      function underThousand(number) {
+        if (number < 100) {
+          return underHundred(number);
+        }
+
+        const hundred = Math.floor(number / 100);
+        const rest = number % 100;
+        return rest === 0
+          ? `${ones[hundred]} hundred`
+          : `${ones[hundred]} hundred ${underHundred(rest)}`;
+      }
+
+      function chunkInternational(number) {
+        const chunks = [];
+        let remaining = number;
+
+        while (remaining > 0) {
+          chunks.push(remaining % 1000);
+          remaining = Math.floor(remaining / 1000);
+        }
+
+        return chunks;
+      }
+
+      function chunkIndian(number) {
+        const chunks = [number % 1000];
+        let remaining = Math.floor(number / 1000);
+
+        while (remaining > 0) {
+          chunks.push(remaining % 100);
+          remaining = Math.floor(remaining / 100);
+        }
+
+        return chunks;
+      }
+
+      function numberToWords(number, numbering) {
+        if (number === 0) {
+          return "zero";
+        }
+
+        const chunks = numbering === "indian" ? chunkIndian(number) : chunkInternational(number);
+        const scales = numbering === "indian" ? indianScales : internationalScales;
+        const words = [];
+
+        chunks.forEach((chunk, index) => {
+          if (chunk === 0) {
+            return;
+          }
+
+          const scale = scales[index];
+          words.unshift(scale ? `${underThousand(chunk)} ${scale}` : underThousand(chunk));
+        });
+
+        return words.join(" ");
+      }
+
+      function pluralize(value, singular, plural) {
+        return value === 1 ? singular : plural;
+      }
+
+      function currencyToWords(amount, currency) {
+        const majorWords = numberToWords(amount.major, currency.numbering);
+        const majorUnit = pluralize(amount.major, currency.majorSingular, currency.majorPlural);
+        const base = `${majorWords} ${majorUnit}`;
+
+        if (currency.minorDigits === 0 || amount.minor === 0) {
+          return `${base} only`;
+        }
+
+        const minorWords = numberToWords(amount.minor, "international");
+        const minorUnit = pluralize(amount.minor, currency.minorSingular, currency.minorPlural);
+        return `${base} and ${minorWords} ${minorUnit} only`;
+      }
+
+      function formatAmount(amount, currency) {
+        return new Intl.NumberFormat(currency.locale, {
+          style: "currency",
+          currency: currency.code,
+          minimumFractionDigits: currency.minorDigits,
+          maximumFractionDigits: currency.minorDigits
+        }).format(amount.numeric);
+      }
+
+      function selectedCurrency() {
+        return currencies.find((currency) => currency.code === currencySelect.value);
+      }
+
+      function renderComparison(amountValue) {
+        currencyList.replaceChildren();
+
+        for (const currency of currencies.slice(0, 6)) {
+          const item = document.createElement("li");
+          const name = document.createElement("span");
+          const words = document.createElement("span");
+
+          name.className = "currency-name";
+          words.className = "currency-words";
+
+          try {
+            const converted = parseAmount(amountValue, currency.minorDigits);
+            name.textContent = `${currency.code} ${formatAmount(converted, currency)}`;
+            words.textContent = currencyToWords(converted, currency);
+          } catch {
+            name.textContent = currency.code;
+            words.textContent = "Not available for this amount";
+          }
+
+          item.append(name, words);
+          currencyList.append(item);
+        }
+      }
+
+      function convert() {
+        const currency = selectedCurrency();
+        const amount = parseAmount(amountInput.value, currency.minorDigits);
+        const words = currencyToWords(amount, currency);
+
+        output.textContent = words;
+        formattedOutput.textContent = formatAmount(amount, currency);
+        errorOutput.textContent = "";
+        amountInput.removeAttribute("aria-invalid");
+        copyButton.disabled = false;
+        renderComparison(amountInput.value);
+      }
+
+      function showError(message) {
+        output.textContent = "";
+        formattedOutput.textContent = "";
+        errorOutput.textContent = message;
+        amountInput.setAttribute("aria-invalid", "true");
+        copyButton.disabled = true;
+        currencyList.replaceChildren();
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        try {
+          convert();
+        } catch (error) {
+          showError(error.message);
+        }
+      });
+
+      [amountInput, currencySelect].forEach((element) => {
+        element.addEventListener("input", () => {
+          try {
+            convert();
+          } catch (error) {
+            showError(error.message);
+          }
+        });
+      });
+
+      copyButton.addEventListener("click", async () => {
+        if (!output.textContent) {
+          return;
+        }
+
+        await navigator.clipboard.writeText(output.textContent);
+        copyButton.textContent = "Copied";
+        window.setTimeout(() => {
+          copyButton.textContent = "Copy result";
+        }, 1400);
+      });
+
+      convert();
+    </script>
+  </body>
+</html>
