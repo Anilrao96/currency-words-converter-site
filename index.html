@@ -359,7 +359,7 @@
           minorSingular: "paise",
           minorPlural: "paise",
           minorDigits: 2,
-          numbering: "indian",
+          numbering: "british",
           locale: "en-IN"
         },
         {
@@ -474,6 +474,7 @@
         "ninety"
       ];
       const internationalScales = ["", "thousand", "million", "billion", "trillion"];
+      const britishScales = internationalScales;
       const indianScales = ["", "thousand", "lakh", "crore", "arab", "kharab"];
 
       const amountInput = document.getElementById("amount");
@@ -574,7 +575,12 @@
         }
 
         const chunks = numbering === "indian" ? chunkIndian(number) : chunkInternational(number);
-        const scales = numbering === "indian" ? indianScales : internationalScales;
+        const scales =
+          numbering === "indian"
+            ? indianScales
+            : numbering === "british"
+              ? britishScales
+              : internationalScales;
         const words = [];
 
         chunks.forEach((chunk, index) => {
